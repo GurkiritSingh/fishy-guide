@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishy Fish Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f1729, #1a2744);
+            border-bottom: 2px solid #1e3a5f;
+            padding: 24px 20px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #4fc3f7, #81d4fa, #4dd0e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: #7a8ba8;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            padding: 12px 16px;
+            background: #111827;
+            border: 2px solid #1e3a5f;
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: #4fc3f7;
+        }
+
+        .search-box::placeholder {
+            color: #4a5568;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 14px;
+            background: #111827;
+            border: 2px solid #1e3a5f;
+            border-radius: 10px;
+            color: #7a8ba8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #4fc3f7;
+            color: #e0e0e0;
+        }
+
+        .filter-btn.active {
+            background: #1e3a5f;
+            border-color: #4fc3f7;
+            color: #4fc3f7;
+        }
+
+        .stats-bar {
+            max-width: 900px;
+            margin: 0 auto 12px;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4a5568;
+            font-size: 0.85rem;
+        }
+
+        .sort-select {
+            padding: 6px 10px;
+            background: #111827;
+            border: 1px solid #1e3a5f;
+            border-radius: 6px;
+            color: #7a8ba8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .fish-grid {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 16px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fish-card {
+            background: #111827;
+            border: 1px solid #1e3a5f;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .fish-card:hover {
+            border-color: #4fc3f7;
+            background: #151f33;
+            transform: translateY(-1px);
+        }
+
+        .fish-card.expanded .fish-details {
+            display: grid;
+        }
+
+        .fish-main {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .fish-rank {
+            font-size: 0.75rem;
+            color: #4a5568;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .fish-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fish-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-motherfish {
+            background: #1a3a2a;
+            color: #4ade80;
+            border: 1px solid #2d5a3e;
+        }
+
+        .rarity-Common     { background: #1f2937; color: #9ca3af; border: 1px solid #374151; }
+        .rarity-Uncommon   { background: #1a2e1a; color: #68d391; border: 1px solid #2d5a2d; }
+        .rarity-Rare       { background: #1a1a3a; color: #63b3ed; border: 1px solid #2d2d6a; }
+        .rarity-Epic       { background: #2a1a3a; color: #b794f4; border: 1px solid #4a2d6a; }
+        .rarity-Legendary  { background: #3a2a1a; color: #f6ad55; border: 1px solid #6a4a2d; }
+        .rarity-Mythical   { background: #3a1a2a; color: #f687b3; border: 1px solid #6a2d4a; }
+        .rarity-Fishy      { background: #1a3a3a; color: #4fd1c5; border: 1px solid #2d6a6a; }
+        .rarity-Limited    { background: #3a3a1a; color: #faf089; border: 1px solid #6a6a2d; }
+
+        .fish-value {
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .fish-value .amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fbbf24;
+        }
+
+        .fish-details {
+            display: none;
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid #1e3a5f;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
+            color: #cbd5e0;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #4a5568;
+        }
+
+        .no-results h3 {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            color: #7a8ba8;
+        }
+
+        @media (max-width: 600px) {
+            .fish-card {
+                grid-template-columns: 1fr;
+            }
+            .fish-value {
+                justify-content: flex-start;
+                padding-left: 40px;
+            }
+            .fish-details {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Fishy Fish Guide</h1>
+        <p>Search and browse all fish — click a fish for more details</p>
+    </div>
+
+    <div class="controls">
+        <input type="text" class="search-box" id="search" placeholder="Search for a fish..." autocomplete="off">
+        <div class="filter-group" id="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="motherfish">Motherfish</button>
+            <button class="filter-btn" data-filter="non-motherfish">Non-Mother</button>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <span id="result-count">78 fish</span>
+        <div>
+            <label style="margin-right:4px;">Sort:</label>
+            <select class="sort-select" id="sort">
+                <option value="value-desc">Value: High → Low</option>
+                <option value="value-asc">Value: Low → High</option>
+                <option value="name-asc">Name: A → Z</option>
+                <option value="name-desc">Name: Z → A</option>
+                <option value="rarity">Rarity</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="fish-grid" id="fish-grid"></div>
+
+    <script>
+const fishData = [
+    { name:"Sardine", rarity:"Common", source:"Fishy Shop", baseValue:18, priceKg:70, maxKg:54.1, mother:false },
+    { name:"Anchovy", rarity:"Common", source:"Fishy Shop", baseValue:13, priceKg:58, maxKg:173.1, mother:false },
+    { name:"Eel", rarity:"Common", source:"Fishy Shop", baseValue:71, priceKg:14.3, maxKg:150.9, mother:true },
+    { name:"Bass", rarity:"Uncommon", source:"Fishy Shop", baseValue:20, priceKg:22, maxKg:258.1, mother:true },
+    { name:"Tilapia", rarity:"Uncommon", source:"Fishy Shop", baseValue:220, priceKg:80, maxKg:139.1, mother:false },
+    { name:"Catfish", rarity:"Uncommon", source:"Fishy Shop", baseValue:87, priceKg:5, maxKg:559.1, mother:true },
+    { name:"Stubby", rarity:"Uncommon", source:"Fishy Shop", baseValue:54, priceKg:2.45, maxKg:555.1, mother:true },
+    { name:"Tuna", rarity:"Rare", source:"Fishing / Buckets", baseValue:1500, priceKg:74, maxKg:503.1, mother:false },
+    { name:"Salmon", rarity:"Rare", source:"Fishy Shop", baseValue:165, priceKg:262, maxKg:110.1, mother:true },
+    { name:"Migrating Salmon", rarity:"Rare", source:"Fall Event / Admin Abuse", baseValue:165, priceKg:262, maxKg:110.1, mother:false },
+    { name:"Pufferfish", rarity:"Rare", source:"Fishing / Buckets", baseValue:7200, priceKg:324, maxKg:500.3, mother:false },
+    { name:"Shrimp", rarity:"Rare", source:"Fishy Shop", baseValue:203, priceKg:21, maxKg:303.1, mother:true },
+    { name:"Angler", rarity:"Epic", source:"Deep Bucket", baseValue:150400, priceKg:2654, maxKg:754.1, mother:false },
+    { name:"Salamander", rarity:"Epic", source:"Axolotl Bucket", baseValue:120400, priceKg:15054, maxKg:230.1, mother:true },
+    { name:"Goldfish", rarity:"Epic", source:"Fishy Shop / Fishing", baseValue:250, priceKg:313, maxKg:9999.99, mother:true },
+    { name:"Blue Tang", rarity:"Epic", source:"Fishy Shop / Fishing", baseValue:17000, priceKg:67054, maxKg:312.1, mother:false },
+    { name:"Clownfish", rarity:"Epic", source:"Fishy Shop", baseValue:1500, priceKg:6031, maxKg:251.1, mother:true },
+    { name:"Red Horn Squid", rarity:"Epic", source:"Ink Bucket", baseValue:174500, priceKg:2931, maxKg:754.1, mother:false },
+    { name:"Rune Fish", rarity:"Epic", source:"Secret Bucket", baseValue:250000, priceKg:804.2, maxKg:5051.1, mother:false },
+    { name:"Koi", rarity:"Legendary", source:"Fishy Shop / Buckets", baseValue:3500, priceKg:1573, maxKg:251.1, mother:true },
+    { name:"Jellyfish", rarity:"Legendary", source:"RNG Eggs", baseValue:30200, priceKg:8737, maxKg:152.1, mother:false },
+    { name:"Swordfish", rarity:"Legendary", source:"Fishy Shop / Fishing / Buckets", baseValue:150000, priceKg:5217.4, maxKg:443.1, mother:false },
+    { name:"Blue Whale", rarity:"Legendary", source:"Whale Bucket", baseValue:240200, priceKg:19, maxKg:140516.1, mother:false },
+    { name:"Pink Axolotl", rarity:"Legendary", source:"Axolotl Bucket", baseValue:100400, priceKg:12652, maxKg:230.1, mother:false },
+    { name:"Sunset Axolotl", rarity:"Legendary", source:"Axolotl Bucket", baseValue:125000, priceKg:15736, maxKg:230.1, mother:false },
+    { name:"Angel Squid", rarity:"Legendary", source:"Fishy Shop / Ink Bucket", baseValue:8300, priceKg:371, maxKg:443.1, mother:true },
+    { name:"Mimic Octopus", rarity:"Legendary", source:"Ink Bucket", baseValue:220500, priceKg:4931, maxKg:683.1, mother:true },
+    { name:"Glitch Guppy", rarity:"Legendary", source:"Secret Bucket", baseValue:86500, priceKg:3778.4, maxKg:49, mother:true },
+    { name:"Sockeye Salmon", rarity:"Legendary", source:"Fall Event Shop", baseValue:122600, priceKg:2813.58, maxKg:683.1, mother:true },
+    { name:"Pumpkin Puffer", rarity:"Legendary", source:"Hallow's Eve Shop", baseValue:270000, priceKg:7900, maxKg:551.1, mother:false },
+    { name:"Seahorse", rarity:"Mythical", source:"RNG Eggs", baseValue:57200, priceKg:18753, maxKg:251.1, mother:true },
+    { name:"Lionfish", rarity:"Mythical", source:"Fishy Shop / Buckets", baseValue:9600, priceKg:3273, maxKg:255.1, mother:true },
+    { name:"Blobfish", rarity:"Mythical", source:"Fishy Shop / Fishing", baseValue:2100000, priceKg:4888, maxKg:683.1, mother:false },
+    { name:"Barrel Eye", rarity:"Mythical", source:"Deep Bucket", baseValue:13500, priceKg:288, maxKg:754.1, mother:true },
+    { name:"Beach Day Axolotl", rarity:"Mythical", source:"Axolotl Bucket", baseValue:80500, priceKg:10157, maxKg:230.1, mother:true },
+    { name:"Hammerhead Shark", rarity:"Mythical", source:"Fishy Shop / Premium Bucket", baseValue:104000, priceKg:5103, maxKg:529.1, mother:true },
+    { name:"Sea Turtle", rarity:"Mythical", source:"Fishy Shop", baseValue:80400, priceKg:1406.39, maxKg:700.3, mother:true },
+    { name:"Dark Jaw", rarity:"Mythical", source:"Deep Bucket", baseValue:75400, priceKg:1539, maxKg:754.1, mother:true },
+    { name:"Orca", rarity:"Mythical", source:"Whale Bucket", baseValue:86600, priceKg:279, maxKg:5051.1, mother:true },
+    { name:"Beluga", rarity:"Mythical", source:"Whale Bucket", baseValue:546700, priceKg:43, maxKg:140516.1, mother:false },
+    { name:"Glistening Stingray", rarity:"Mythical", source:"Secret Bucket", baseValue:1300000, priceKg:26752.86, maxKg:754.1, mother:false },
+    { name:"Snapping Rock Turtle", rarity:"Mythical", source:"Fishing", baseValue:700000, priceKg:13747.6, maxKg:754.1, mother:false },
+    { name:"Emberfin", rarity:"Mythical", source:"Fall Event Shop", baseValue:330000, priceKg:5508, maxKg:700.3, mother:true },
+    { name:"BatFish", rarity:"Mythical", source:"Hallow's Eve Shop", baseValue:350400, priceKg:7000, maxKg:754.1, mother:true },
+    { name:"Abyss Squid", rarity:"Fishy", source:"Ink Bucket", baseValue:504700, priceKg:1541, maxKg:1054.1, mother:true },
+    { name:"Manatee", rarity:"Fishy", source:"Fishy Shop / Fishing", baseValue:225000, priceKg:10324, maxKg:351.1, mother:true },
+    { name:"Megalodon", rarity:"Fishy", source:"Fishy Shop / Premium Bucket", baseValue:428500, priceKg:434, maxKg:10483.7, mother:true },
+    { name:"Ruined Megalodon", rarity:"Fishy", source:"Robux Purchase", baseValue:514600, priceKg:478, maxKg:10483.7, mother:true },
+    { name:"Blue Dolphin", rarity:"Fishy", source:"-", baseValue:509400, priceKg:10288, maxKg:754.1, mother:true },
+    { name:"Ghost Shark", rarity:"Fishy", source:"Deep Bucket", baseValue:584000, priceKg:1782, maxKg:1054.1, mother:true },
+    { name:"Squid", rarity:"Fishy", source:"Fishy Shop", baseValue:1500000, priceKg:29548, maxKg:754.1, mother:false },
+    { name:"Bloop", rarity:"Fishy", source:"Fishy Shop / Fishing", baseValue:728500, priceKg:18.5, maxKg:505760, mother:true },
+    { name:"Vampire Squid", rarity:"Fishy", source:"Admin Abuse", baseValue:1200000, priceKg:23691, maxKg:754.1, mother:false },
+    { name:"Nessie", rarity:"Fishy", source:"Fishing / Secret Shop", baseValue:900300, priceKg:2895.9, maxKg:5051, mother:true },
+    { name:"Deep Sea Axolotl", rarity:"Fishy", source:"Axolotl Bucket", baseValue:290400, priceKg:36304, maxKg:230.1, mother:true },
+    { name:"Cosmic Narwhal", rarity:"Fishy", source:"Whale Bucket", baseValue:700100, priceKg:1609, maxKg:5051.1, mother:true },
+    { name:"Bombardillo Crocodillo", rarity:"Fishy", source:"Secret Bucket", baseValue:734300, priceKg:1457, maxKg:7541.1, mother:true },
+    { name:"Cthulu", rarity:"Fishy", source:"Robux Purchase", baseValue:2530000, priceKg:41.7, maxKg:700000, mother:true },
+    { name:"El Gran Maja", rarity:"Fishy", source:"Robux Purchase", baseValue:2830000, priceKg:219.93, maxKg:140500, mother:true },
+    { name:"Tough Ninja Turtle", rarity:"Fishy", source:"Turtle Bucket", baseValue:800000, priceKg:13200, maxKg:700.3, mother:true },
+    { name:"Prime Ninja Turtle", rarity:"Fishy", source:"Turtle Bucket", baseValue:700000, priceKg:11500, maxKg:700.3, mother:true },
+    { name:"Goofy Ninja Turtle", rarity:"Fishy", source:"Turtle Bucket", baseValue:600000, priceKg:9900, maxKg:700.3, mother:true },
+    { name:"Tech Ninja Turtle", rarity:"Fishy", source:"Turtle Bucket", baseValue:500000, priceKg:8200, maxKg:700.3, mother:true },
+    { name:"The Gaia", rarity:"Fishy", source:"Fishing", baseValue:1200000, priceKg:48, maxKg:140000, mother:true },
+    { name:"Leviathan", rarity:"Fishy", source:"Fall Event Shop", baseValue:2600000, priceKg:7900, maxKg:1054, mother:true },
+    { name:"The Maw", rarity:"Fishy", source:"Hallow's Eve Shop", baseValue:2600000, priceKg:7900, maxKg:1054, mother:true },
+    { name:"Krakenling Sorrow", rarity:"Limited", source:"Kraken Boss", baseValue:1000000, priceKg:1900, maxKg:7500, mother:true },
+    { name:"Pikey", rarity:"Limited", source:"Starter Quest", baseValue:1500, priceKg:1500, maxKg:49, mother:false },
+    { name:"Squid 456", rarity:"Limited", source:"Admin Event", baseValue:456000, priceKg:0, maxKg:456, mother:false },
+    { name:"Krakenling Wrath", rarity:"Limited", source:"Kraken Boss", baseValue:1000000, priceKg:1900, maxKg:7500, mother:true },
+    { name:"Krakenling Bliss", rarity:"Limited", source:"Kraken Boss", baseValue:1000000, priceKg:1900, maxKg:7500, mother:true },
+    { name:"Glitched Shrimp", rarity:"Limited", source:"Admin Event", baseValue:132500, priceKg:595, maxKg:1510, mother:true },
+    { name:"Tralalelo Shark", rarity:"Limited", source:"Old Fishy Shop", baseValue:225000, priceKg:10300, maxKg:555, mother:false },
+    { name:"ZOMG Salmon", rarity:"Limited", source:"Limited Fall Event Code", baseValue:90300, priceKg:303, maxKg:5051, mother:true },
+    { name:"The Bombardillo", rarity:"Limited", source:"Admin Event", baseValue:834300, priceKg:1640, maxKg:7500, mother:false },
+    { name:"Travish", rarity:"Limited", source:"Admin Event", baseValue:277700, priceKg:12100, maxKg:555, mother:false },
+    { name:"Astrafish", rarity:"Limited", source:"Neko Quest (not working)", baseValue:1235, priceKg:0, maxKg:50450, mother:false },
+    { name:"Wafflish", rarity:"Limited", source:"Admin Event", baseValue:38800, priceKg:0, maxKg:112600, mother:false },
+];
+
+const rarityOrder = { Common:0, Uncommon:1, Rare:2, Epic:3, Legendary:4, Mythical:5, Fishy:6, Limited:7 };
+
+function formatValue(v) {
+    if (v >= 1000000) return (v/1000000).toFixed(v%1000000===0?0:1) + 'm';
+    if (v >= 1000) return (v/1000).toFixed(v%1000===0?0:1) + 'k';
+    return v.toLocaleString();
+}
+
+function formatKg(v) {
+    if (v >= 1000000) return (v/1000000).toFixed(1) + 'm';
+    if (v >= 1000) return (v/1000).toFixed(v%1000===0?0:1) + 'k';
+    return v.toLocaleString();
+}
+
+let currentFilter = 'all';
+let currentSort = 'value-desc';
+
+function getFiltered() {
+    const query = document.getElementById('search').value.toLowerCase().trim();
+    let list = fishData.filter(f => {
+        if (query && !f.name.toLowerCase().includes(query) && !f.rarity.toLowerCase().includes(query) && !f.source.toLowerCase().includes(query)) return false;
+        if (currentFilter === 'motherfish' && !f.mother) return false;
+        if (currentFilter === 'non-motherfish' && f.mother) return false;
+        return true;
+    });
+
+    list.sort((a, b) => {
+        switch(currentSort) {
+            case 'value-desc': return b.baseValue - a.baseValue;
+            case 'value-asc': return a.baseValue - b.baseValue;
+            case 'name-asc': return a.name.localeCompare(b.name);
+            case 'name-desc': return b.name.localeCompare(a.name);
+            case 'rarity': return (rarityOrder[b.rarity]||0) - (rarityOrder[a.rarity]||0) || b.baseValue - a.baseValue;
+        }
+    });
+    return list;
+}
+
+function render() {
+    const list = getFiltered();
+    const grid = document.getElementById('fish-grid');
+    document.getElementById('result-count').textContent = list.length + ' fish';
+
+    if (list.length === 0) {
+        grid.innerHTML = '<div class="no-results"><h3>No fish found</h3><p>Try a different search or filter</p></div>';
+        return;
+    }
+
+    grid.innerHTML = list.map((f, i) => `
+        <div class="fish-card" onclick="this.classList.toggle('expanded')">
+            <div class="fish-main">
+                <span class="fish-rank">#${i+1}</span>
+                <span class="fish-name">${f.name}</span>
+                <div class="fish-badges">
+                    <span class="badge rarity-${f.rarity}">${f.rarity}</span>
+                    ${f.mother ? '<span class="badge badge-motherfish">Mother</span>' : ''}
+                </div>
+            </div>
+            <div class="fish-value">
+                <span class="amount">${formatValue(f.baseValue)}</span>
+            </div>
+            <div class="fish-details">
+                <div class="detail-item">
+                    <span class="detail-label">Base Value</span>
+                    <span class="detail-value">${f.baseValue.toLocaleString()}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Price / Kg</span>
+                    <span class="detail-value">${f.priceKg > 0 ? f.priceKg.toLocaleString() : '-'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Max Kg</span>
+                    <span class="detail-value">${formatKg(f.maxKg)}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Max Total Value</span>
+                    <span class="detail-value" style="color:#fbbf24;font-weight:600">${f.priceKg > 0 ? formatValue(f.baseValue + Math.floor(f.priceKg * f.maxKg)) : '-'}</span>
+                </div>
+                <div class="detail-item" style="grid-column:1/-1">
+                    <span class="detail-label">Source</span>
+                    <span class="detail-value">${f.source}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sort').addEventListener('change', e => { currentSort = e.target.value; render(); });
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+    });
+});
+
+render();
+    </script>
+</body>
+</html>
