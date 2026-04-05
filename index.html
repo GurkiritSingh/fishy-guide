@@ -760,14 +760,20 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.getElementById('f-streak').textContent = bestStreak;
     }
 
+    function normAngle(a) {
+        a = a % (Math.PI * 2);
+        return a < 0 ? a + Math.PI * 2 : a;
+    }
+
     function isInZone() {
-        let a = angle % (Math.PI * 2);
-        if (a < 0) a += Math.PI * 2;
-        let s = zoneStart % (Math.PI * 2);
-        if (s < 0) s += Math.PI * 2;
-        let e = (s + zoneSize) % (Math.PI * 2);
-        if (e > s) return a >= s && a <= e;
-        return a >= s || a <= e;
+        let a = normAngle(angle);
+        let s = normAngle(zoneStart);
+        let e = normAngle(zoneStart + zoneSize);
+        // Calculate shortest angular distance from marker to zone center
+        let center = normAngle(zoneStart + zoneSize / 2);
+        let diff = Math.abs(a - center);
+        if (diff > Math.PI) diff = Math.PI * 2 - diff;
+        return diff <= zoneSize / 2;
     }
 
     function draw() {
