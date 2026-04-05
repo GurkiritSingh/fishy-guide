@@ -886,7 +886,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
             setStatus('HIT! Nice catch!', 'hit');
             // Make it harder
             zoneSize = Math.max(0.15, zoneSize - difficulties[diff].shrink);
-            speed += difficulties[diff].speedUp;
+            speed = (Math.abs(speed) + difficulties[diff].speedUp) * (speed > 0 ? -1 : 1);
             randomizeZone();
         } else {
             misses++;
@@ -894,9 +894,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
             flashType = 'miss';
             flashTimer = 15;
             setStatus('MISS! The fish got away...', 'miss');
-            // Reset difficulty slightly
+            // Reset difficulty, keep direction flipped
+            let dir = speed > 0 ? -1 : 1;
             zoneSize = difficulties[diff].zoneSize;
-            speed = difficulties[diff].speed;
+            speed = difficulties[diff].speed * dir;
             randomizeZone();
         }
         updateStats();
