@@ -34,6 +34,172 @@
             font-size: 0.9rem;
         }
 
+        .tab-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            max-width: 900px;
+            margin: 16px auto 0;
+            padding: 0 16px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: #111827;
+            border: 2px solid #1e3a5f;
+            border-radius: 10px 10px 0 0;
+            color: #7a8ba8;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: none;
+        }
+
+        .tab-btn:hover { border-color: #4fc3f7; color: #e0e0e0; }
+
+        .tab-btn.active {
+            background: #0a0e1a;
+            border-color: #4fc3f7;
+            color: #4fc3f7;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Fishing Practice Styles */
+        .fishing-section {
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 16px;
+            text-align: center;
+        }
+
+        .fishing-section h2 {
+            font-size: 1.5rem;
+            color: #4fc3f7;
+            margin-bottom: 8px;
+        }
+
+        .fishing-section .subtitle {
+            color: #7a8ba8;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .fishing-game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            cursor: pointer;
+        }
+
+        .circle-container canvas {
+            width: 280px;
+            height: 280px;
+        }
+
+        .fishing-status {
+            font-size: 1.4rem;
+            font-weight: 700;
+            min-height: 40px;
+        }
+
+        .fishing-status.hit { color: #4ade80; }
+        .fishing-status.miss { color: #f87171; }
+        .fishing-status.waiting { color: #7a8ba8; }
+
+        .fishing-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .fishing-stat {
+            background: #111827;
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 12px 20px;
+            text-align: center;
+        }
+
+        .fishing-stat .label {
+            font-size: 0.7rem;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fishing-stat .val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        .difficulty-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .diff-btn {
+            padding: 8px 16px;
+            background: #111827;
+            border: 2px solid #1e3a5f;
+            border-radius: 8px;
+            color: #7a8ba8;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .diff-btn:hover { border-color: #4fc3f7; color: #e0e0e0; }
+        .diff-btn.active { background: #1e3a5f; border-color: #4fc3f7; color: #4fc3f7; }
+
+        .fishing-tips {
+            max-width: 500px;
+            margin: 20px auto 0;
+            text-align: left;
+            background: #111827;
+            border: 1px solid #1e3a5f;
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .fishing-tips h3 {
+            color: #4fc3f7;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .fishing-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .fishing-tips li {
+            color: #cbd5e0;
+            font-size: 0.85rem;
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .fishing-tips li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #4fc3f7;
+        }
+
         .controls {
             max-width: 900px;
             margin: 20px auto;
@@ -281,6 +447,12 @@
         <p>Search and browse all fish — click a fish for more details</p>
     </div>
 
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="fish-tab">Fish Guide</button>
+        <button class="tab-btn" data-tab="fishing-tab">Fishing Practice</button>
+    </div>
+
+    <div id="fish-tab" class="tab-content active">
     <div class="controls">
         <input type="text" class="search-box" id="search" placeholder="Search for a fish..." autocomplete="off">
         <div class="filter-group" id="filters">
@@ -305,6 +477,45 @@
     </div>
 
     <div class="fish-grid" id="fish-grid"></div>
+    </div>
+
+    <div id="fishing-tab" class="tab-content">
+        <div class="fishing-section">
+            <h2>Fishing Practice</h2>
+            <p class="subtitle">Practice the fishing skill check — click when the marker is inside the blue zone!</p>
+
+            <div class="difficulty-btns">
+                <button class="diff-btn active" data-diff="easy">Easy (Common)</button>
+                <button class="diff-btn" data-diff="medium">Medium (Rare)</button>
+                <button class="diff-btn" data-diff="hard">Hard (Epic)</button>
+                <button class="diff-btn" data-diff="insane">Insane (Mythical)</button>
+            </div>
+
+            <div class="fishing-game-wrapper">
+                <div class="fishing-status waiting" id="fish-status">Click the circle to start!</div>
+                <div class="circle-container" id="fishing-circle">
+                    <canvas id="fishing-canvas" width="560" height="560"></canvas>
+                </div>
+                <div class="fishing-info">
+                    <div class="fishing-stat"><div class="label">Round</div><div class="val" id="f-round">0</div></div>
+                    <div class="fishing-stat"><div class="label">Hits</div><div class="val" id="f-hits" style="color:#4ade80">0</div></div>
+                    <div class="fishing-stat"><div class="label">Misses</div><div class="val" id="f-misses" style="color:#f87171">0</div></div>
+                    <div class="fishing-stat"><div class="label">Best Streak</div><div class="val" id="f-streak">0</div></div>
+                </div>
+            </div>
+
+            <div class="fishing-tips">
+                <h3>Tips</h3>
+                <ul>
+                    <li>Click when the rotating marker is inside the blue zone</li>
+                    <li>Each successful hit makes the zone smaller and faster</li>
+                    <li>Aim for the middle of the blue zone, not the edges</li>
+                    <li>Better fishing rods may give you a larger blue zone in-game</li>
+                    <li>Rarer fish have smaller and faster zones</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <script>
 const fishData = [
@@ -488,6 +699,222 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 render();
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+});
+
+// Fishing Practice Game
+(() => {
+    const canvas = document.getElementById('fishing-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = 560, H = 560, cx = W/2, cy = H/2, radius = 220;
+
+    const difficulties = {
+        easy:   { zoneSize: 1.2,  speed: 1.8, shrink: 0.08, speedUp: 0.15 },
+        medium: { zoneSize: 0.85, speed: 2.5, shrink: 0.07, speedUp: 0.2 },
+        hard:   { zoneSize: 0.55, speed: 3.5, shrink: 0.05, speedUp: 0.25 },
+        insane: { zoneSize: 0.35, speed: 5.0, shrink: 0.03, speedUp: 0.3 },
+    };
+
+    let diff = 'easy';
+    let angle = 0;
+    let zoneStart = 0;
+    let zoneSize = difficulties[diff].zoneSize;
+    let speed = difficulties[diff].speed;
+    let running = false;
+    let hits = 0, misses = 0, round = 0, streak = 0, bestStreak = 0;
+    let flashTimer = 0;
+    let flashType = '';
+
+    function resetGame() {
+        angle = 0;
+        zoneSize = difficulties[diff].zoneSize;
+        speed = difficulties[diff].speed;
+        zoneStart = Math.random() * Math.PI * 2;
+        hits = 0; misses = 0; round = 0; streak = 0; bestStreak = 0;
+        updateStats();
+        setStatus('Click the circle to start!', 'waiting');
+    }
+
+    function randomizeZone() {
+        zoneStart = Math.random() * Math.PI * 2;
+    }
+
+    function setStatus(text, type) {
+        const el = document.getElementById('fish-status');
+        el.textContent = text;
+        el.className = 'fishing-status ' + type;
+    }
+
+    function updateStats() {
+        document.getElementById('f-round').textContent = round;
+        document.getElementById('f-hits').textContent = hits;
+        document.getElementById('f-misses').textContent = misses;
+        document.getElementById('f-streak').textContent = bestStreak;
+    }
+
+    function isInZone() {
+        let a = angle % (Math.PI * 2);
+        if (a < 0) a += Math.PI * 2;
+        let s = zoneStart % (Math.PI * 2);
+        if (s < 0) s += Math.PI * 2;
+        let e = (s + zoneSize) % (Math.PI * 2);
+        if (e > s) return a >= s && a <= e;
+        return a >= s || a <= e;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Outer ring bg
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.lineWidth = 36;
+        ctx.strokeStyle = '#1e293b';
+        ctx.stroke();
+
+        // Gold border rings
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius + 18, 0, Math.PI * 2);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#b8960c';
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 18, 0, Math.PI * 2);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#b8960c';
+        ctx.stroke();
+
+        // Blue zone
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, zoneStart, zoneStart + zoneSize);
+        ctx.lineWidth = 36;
+        ctx.strokeStyle = flashTimer > 0 && flashType === 'hit' ? '#4ade80' : flashTimer > 0 && flashType === 'miss' ? '#f87171' : '#2196f3';
+        ctx.stroke();
+
+        // Zone edge markers
+        for (let a of [zoneStart, zoneStart + zoneSize]) {
+            const ix = cx + Math.cos(a) * (radius - 20);
+            const iy = cy + Math.sin(a) * (radius - 20);
+            const ox = cx + Math.cos(a) * (radius + 20);
+            const oy = cy + Math.sin(a) * (radius + 20);
+            ctx.beginPath();
+            ctx.moveTo(ix, iy);
+            ctx.lineTo(ox, oy);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#4fc3f7';
+            ctx.stroke();
+        }
+
+        // Rotating marker
+        if (running) {
+            const mx = cx + Math.cos(angle) * radius;
+            const my = cy + Math.sin(angle) * radius;
+
+            // Marker glow
+            ctx.beginPath();
+            ctx.arc(mx, my, 16, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.15)';
+            ctx.fill();
+
+            // Marker dot
+            ctx.beginPath();
+            ctx.arc(mx, my, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#b8960c';
+            ctx.stroke();
+        }
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 40, 0, Math.PI * 2);
+        ctx.fillStyle = '#0d1320';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#1e3a5f';
+        ctx.stroke();
+
+        // Center text
+        ctx.fillStyle = '#7a8ba8';
+        ctx.font = '600 18px Segoe UI';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        if (!running) {
+            ctx.fillText('CLICK TO', cx, cy - 14);
+            ctx.fillText('START', cx, cy + 14);
+        } else {
+            ctx.fillStyle = '#4fc3f7';
+            ctx.font = '700 28px Segoe UI';
+            ctx.fillText('CLICK!', cx, cy);
+        }
+
+        if (flashTimer > 0) flashTimer--;
+    }
+
+    function loop() {
+        if (running) {
+            angle += speed * 0.016;
+        }
+        draw();
+        requestAnimationFrame(loop);
+    }
+
+    canvas.addEventListener('click', () => {
+        if (!running) {
+            running = true;
+            angle = zoneStart - 0.5;
+            setStatus('Click when the marker is in the blue zone!', 'waiting');
+            return;
+        }
+
+        round++;
+        if (isInZone()) {
+            hits++;
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+            flashType = 'hit';
+            flashTimer = 15;
+            setStatus('HIT! Nice catch!', 'hit');
+            // Make it harder
+            zoneSize = Math.max(0.15, zoneSize - difficulties[diff].shrink);
+            speed += difficulties[diff].speedUp;
+            randomizeZone();
+        } else {
+            misses++;
+            streak = 0;
+            flashType = 'miss';
+            flashTimer = 15;
+            setStatus('MISS! The fish got away...', 'miss');
+            // Reset difficulty slightly
+            zoneSize = difficulties[diff].zoneSize;
+            speed = difficulties[diff].speed;
+            randomizeZone();
+        }
+        updateStats();
+    });
+
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            diff = btn.dataset.diff;
+            running = false;
+            resetGame();
+        });
+    });
+
+    resetGame();
+    loop();
+})();
     </script>
 </body>
 </html>
