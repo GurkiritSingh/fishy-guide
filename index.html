@@ -1,523 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fishy Fish Guide</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fishy Fish Guide - Own a Fish Pond</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface-container-high": "#262a37",
+        "surface-container-low": "#171b28",
+        "background": "#0f131f",
+        "surface-variant": "#313442",
+        "surface": "#0f131f",
+        "surface-bright": "#353946",
+        "surface-container-highest": "#313442",
+        "outline": "#889299",
+        "on-background": "#dfe2f3",
+        "outline-variant": "#3e484f",
+        "surface-container": "#1b1f2c",
+        "primary": "#9adbff",
+        "primary-container": "#4fc3f7",
+        "surface-container-lowest": "#0a0e1a",
+        "on-surface": "#dfe2f3",
+        "on-surface-variant": "#bdc8d0",
+        "on-primary": "#003548",
+        "surface-dim": "#0f131f",
+        "secondary": "#e7eb00",
+        "secondary-container": "#705d00",
+        "tertiary": "#ffc4cf",
+        "tertiary-container": "#ff9ab1",
+        "on-tertiary": "#66002a",
+      },
+      fontFamily: {
+        headline: ["Plus Jakarta Sans"],
+        body: ["Inter"],
+      },
+    },
+  },
+}
+</script>
+<style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block; line-height: 1;
+}
+body { background: #0f131f; color: #dfe2f3; font-family: 'Inter', sans-serif; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0e1a;
-            color: #e0e0e0;
-            min-height: 100vh;
-        }
+/* Rarity border colors */
+.rarity-border-Common { border-left-color: #6b7280; }
+.rarity-border-Uncommon { border-left-color: #34d399; }
+.rarity-border-Rare { border-left-color: #60a5fa; }
+.rarity-border-Epic { border-left-color: #a78bfa; }
+.rarity-border-Legendary { border-left-color: #fbbf24; }
+.rarity-border-Mythical { border-left-color: #f472b6; }
+.rarity-border-Fishy { border-left-color: #2dd4bf; }
+.rarity-border-Limited { border-left-color: #facc15; }
 
-        .header {
-            background: linear-gradient(135deg, #0f1729, #1a2744);
-            border-bottom: 2px solid #1e3a5f;
-            padding: 24px 20px 20px;
-            text-align: center;
-        }
+/* Rarity badge styles */
+.rbadge-Common { background: #374151; color: #9ca3af; }
+.rbadge-Uncommon { background: #064e3b; color: #34d399; }
+.rbadge-Rare { background: #1e3a5f; color: #60a5fa; }
+.rbadge-Epic { background: #3b0764; color: #a78bfa; }
+.rbadge-Legendary { background: #713f12; color: #fbbf24; box-shadow: 0 0 12px rgba(251,191,36,0.3); }
+.rbadge-Mythical { background: #831843; color: #f472b6; box-shadow: 0 0 12px rgba(244,114,182,0.3); }
+.rbadge-Fishy { background: #134e4a; color: #2dd4bf; box-shadow: 0 0 12px rgba(45,212,191,0.3); }
+.rbadge-Limited { background: #854d0e; color: #facc15; box-shadow: 0 0 12px rgba(250,204,21,0.3); }
 
-        .header h1 {
-            font-size: 2rem;
-            background: linear-gradient(90deg, #4fc3f7, #81d4fa, #4dd0e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
-        }
+/* Rarity value colors */
+.rval-Common { color: #9ca3af; }
+.rval-Uncommon { color: #34d399; }
+.rval-Rare { color: #60a5fa; }
+.rval-Epic { color: #a78bfa; }
+.rval-Legendary { color: #fbbf24; }
+.rval-Mythical { color: #f472b6; }
+.rval-Fishy { color: #2dd4bf; }
+.rval-Limited { color: #facc15; }
 
-        .header p {
-            color: #7a8ba8;
-            font-size: 0.9rem;
-        }
+/* Fishing game */
+.fishing-status.hit { color: #4ade80; }
+.fishing-status.miss { color: #f87171; }
+.fishing-status.waiting { color: #bdc8d0; }
 
-        .tab-bar {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            max-width: 900px;
-            margin: 16px auto 0;
-            padding: 0 16px;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            background: #111827;
-            border: 2px solid #1e3a5f;
-            border-radius: 10px 10px 0 0;
-            color: #7a8ba8;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: none;
-        }
-
-        .tab-btn:hover { border-color: #4fc3f7; color: #e0e0e0; }
-
-        .tab-btn.active {
-            background: #0a0e1a;
-            border-color: #4fc3f7;
-            color: #4fc3f7;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Fishing Practice Styles */
-        .fishing-section {
-            max-width: 900px;
-            margin: 24px auto;
-            padding: 0 16px;
-            text-align: center;
-        }
-
-        .fishing-section h2 {
-            font-size: 1.5rem;
-            color: #4fc3f7;
-            margin-bottom: 8px;
-        }
-
-        .fishing-section .subtitle {
-            color: #7a8ba8;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-        }
-
-        .fishing-game-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .circle-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            cursor: pointer;
-        }
-
-        .circle-container canvas {
-            width: 280px;
-            height: 280px;
-        }
-
-        .fishing-status {
-            font-size: 1.4rem;
-            font-weight: 700;
-            min-height: 40px;
-        }
-
-        .fishing-status.hit { color: #4ade80; }
-        .fishing-status.miss { color: #f87171; }
-        .fishing-status.waiting { color: #7a8ba8; }
-
-        .fishing-info {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .fishing-stat {
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 10px;
-            padding: 12px 20px;
-            text-align: center;
-        }
-
-        .fishing-stat .label {
-            font-size: 0.7rem;
-            color: #4a5568;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .fishing-stat .val {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #fbbf24;
-        }
-
-        .difficulty-btns {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .diff-btn {
-            padding: 8px 16px;
-            background: #111827;
-            border: 2px solid #1e3a5f;
-            border-radius: 8px;
-            color: #7a8ba8;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .diff-btn:hover { border-color: #4fc3f7; color: #e0e0e0; }
-        .diff-btn.active { background: #1e3a5f; border-color: #4fc3f7; color: #4fc3f7; }
-
-        .fishing-tips {
-            max-width: 500px;
-            margin: 20px auto 0;
-            text-align: left;
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 12px;
-            padding: 16px 20px;
-        }
-
-        .fishing-tips h3 {
-            color: #4fc3f7;
-            font-size: 1rem;
-            margin-bottom: 8px;
-        }
-
-        .fishing-tips ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .fishing-tips li {
-            color: #cbd5e0;
-            font-size: 0.85rem;
-            padding: 4px 0;
-            padding-left: 16px;
-            position: relative;
-        }
-
-        .fishing-tips li::before {
-            content: ">";
-            position: absolute;
-            left: 0;
-            color: #4fc3f7;
-        }
-
-        .controls {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0 16px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 220px;
-            padding: 12px 16px;
-            background: #111827;
-            border: 2px solid #1e3a5f;
-            border-radius: 10px;
-            color: #e0e0e0;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .search-box:focus {
-            border-color: #4fc3f7;
-        }
-
-        .search-box::placeholder {
-            color: #4a5568;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 10px 14px;
-            background: #111827;
-            border: 2px solid #1e3a5f;
-            border-radius: 10px;
-            color: #7a8ba8;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-btn:hover {
-            border-color: #4fc3f7;
-            color: #e0e0e0;
-        }
-
-        .filter-btn.active {
-            background: #1e3a5f;
-            border-color: #4fc3f7;
-            color: #4fc3f7;
-        }
-
-        .stats-bar {
-            max-width: 900px;
-            margin: 0 auto 12px;
-            padding: 0 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #4a5568;
-            font-size: 0.85rem;
-        }
-
-        .sort-select {
-            padding: 6px 10px;
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            color: #7a8ba8;
-            font-size: 0.85rem;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .fish-grid {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 16px 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .fish-card {
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 12px;
-            padding: 14px 18px;
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .fish-card:hover {
-            border-color: #4fc3f7;
-            background: #151f33;
-            transform: translateY(-1px);
-        }
-
-        .fish-card.expanded .fish-details {
-            display: grid;
-        }
-
-        .fish-main {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .fish-rank {
-            font-size: 0.75rem;
-            color: #4a5568;
-            width: 28px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .fish-name {
-            font-weight: 600;
-            font-size: 1.05rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .fish-badges {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .badge {
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-motherfish {
-            background: #1a3a2a;
-            color: #4ade80;
-            border: 1px solid #2d5a3e;
-        }
-
-        .rarity-Common     { background: #1f2937; color: #9ca3af; border: 1px solid #374151; }
-        .rarity-Uncommon   { background: #1a2e1a; color: #68d391; border: 1px solid #2d5a2d; }
-        .rarity-Rare       { background: #1a1a3a; color: #63b3ed; border: 1px solid #2d2d6a; }
-        .rarity-Epic       { background: #2a1a3a; color: #b794f4; border: 1px solid #4a2d6a; }
-        .rarity-Legendary  { background: #3a2a1a; color: #f6ad55; border: 1px solid #6a4a2d; }
-        .rarity-Mythical   { background: #3a1a2a; color: #f687b3; border: 1px solid #6a2d4a; }
-        .rarity-Fishy      { background: #1a3a3a; color: #4fd1c5; border: 1px solid #2d6a6a; }
-        .rarity-Limited    { background: #3a3a1a; color: #faf089; border: 1px solid #6a6a2d; }
-
-        .fish-value {
-            text-align: right;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .fish-value .amount {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #fbbf24;
-        }
-
-        .fish-source {
-            font-size: 0.8rem;
-            color: #7a8ba8;
-            grid-column: 1 / -1;
-            padding-left: 40px;
-            margin-top: -4px;
-        }
-
-        .fish-details {
-            display: none;
-            grid-column: 1 / -1;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-            margin-top: 8px;
-            padding-top: 12px;
-            border-top: 1px solid #1e3a5f;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .detail-label {
-            font-size: 0.7rem;
-            color: #4a5568;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .detail-value {
-            font-size: 0.9rem;
-            color: #cbd5e0;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: #4a5568;
-        }
-
-        .no-results h3 {
-            font-size: 1.2rem;
-            margin-bottom: 6px;
-            color: #7a8ba8;
-        }
-
-        @media (max-width: 600px) {
-            .fish-card {
-                grid-template-columns: 1fr;
-            }
-            .fish-value {
-                justify-content: flex-start;
-                padding-left: 40px;
-            }
-            .fish-details {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-    </style>
+/* Glow effects on hover */
+.card-glow-Legendary:hover { box-shadow: 0 8px 32px rgba(251,191,36,0.15); }
+.card-glow-Mythical:hover { box-shadow: 0 8px 32px rgba(244,114,182,0.15); }
+.card-glow-Fishy:hover { box-shadow: 0 8px 32px rgba(45,212,191,0.15); }
+.card-glow-Epic:hover { box-shadow: 0 8px 32px rgba(167,139,250,0.15); }
+.card-glow-Limited:hover { box-shadow: 0 8px 32px rgba(250,204,21,0.15); }
+.card-glow-Rare:hover { box-shadow: 0 8px 32px rgba(96,165,250,0.1); }
+.card-glow-Uncommon:hover { box-shadow: 0 8px 32px rgba(52,211,153,0.08); }
+.card-glow-Common:hover { box-shadow: 0 8px 32px rgba(156,163,175,0.05); }
+</style>
 </head>
-<body>
-    <div class="header">
-        <h1>Fishy Fish Guide</h1>
-        <p>Search and browse all fish — click a fish for more details</p>
+<body class="antialiased min-h-screen pb-28 overflow-x-hidden">
+
+<!-- Ambient background -->
+<div class="fixed top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="fixed bottom-1/4 -right-20 w-96 h-96 bg-primary-container/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+<!-- Top Nav -->
+<header class="fixed top-0 w-full z-50 bg-[#0f131f]/70 backdrop-blur-xl border-b border-[#313442]/30">
+  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-primary text-2xl">waves</span>
+      <span class="font-headline font-extrabold text-xl bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent tracking-tight">Fishy Fish Guide</span>
+    </div>
+    <nav class="flex gap-2">
+      <button class="nav-tab active px-5 py-2 rounded-full text-sm font-headline font-bold transition-all" data-tab="fish-tab">
+        <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1">menu_book</span>Guide
+      </button>
+      <button class="nav-tab px-5 py-2 rounded-full text-sm font-headline font-bold transition-all" data-tab="fishing-tab">
+        <span class="material-symbols-outlined text-sm align-middle mr-1">sports_esports</span>Practice
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ==================== FISH GUIDE TAB ==================== -->
+<div id="fish-tab" class="tab-content pt-20">
+  <!-- Hero -->
+  <section class="relative px-6 pt-8 pb-10 max-w-7xl mx-auto">
+    <div class="text-center space-y-4">
+      <h2 class="text-4xl md:text-6xl font-headline font-extrabold tracking-tighter leading-tight">
+        Dive into the <span class="text-primary italic">Depths</span>
+      </h2>
+      <p class="text-on-surface-variant max-w-lg mx-auto font-medium text-lg leading-relaxed">
+        Catalog your catches, track rare species, and master the art of the pond.
+      </p>
+    </div>
+  </section>
+
+  <!-- Search & Filters -->
+  <section class="px-6 max-w-7xl mx-auto space-y-4 mb-8">
+    <div class="flex flex-col md:flex-row gap-4 items-center">
+      <div class="relative flex-grow w-full">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <input id="search" class="w-full bg-surface-container-lowest border-none rounded-full py-4 pl-12 pr-6 text-on-surface placeholder:text-outline/60 focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Search species, source, or rarity..." type="text" autocomplete="off"/>
+      </div>
+      <div class="flex gap-2">
+        <select id="sort" class="bg-surface-container-high text-on-surface-variant px-5 py-3 rounded-full font-headline font-bold text-sm border-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+          <option value="value-desc">Value: High to Low</option>
+          <option value="value-asc">Value: Low to High</option>
+          <option value="name-asc">Name: A to Z</option>
+          <option value="name-desc">Name: Z to A</option>
+          <option value="rarity">Rarity</option>
+        </select>
+      </div>
+    </div>
+    <!-- Filter chips -->
+    <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+      <button class="filter-chip active px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="all">All Fish</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="motherfish">
+        <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1">egg</span>Motherfish
+      </button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="non-motherfish">Non-Mother</button>
+      <div class="w-px bg-outline-variant/30 mx-1"></div>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="Common">Common</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="Uncommon">Uncommon</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border transition-all whitespace-nowrap" data-filter="Rare">Rare</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border border-primary/30 transition-all whitespace-nowrap" data-filter="Epic">Epic</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border border-[#fbbf24]/30 transition-all whitespace-nowrap" data-filter="Legendary">Legendary</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border border-[#f472b6]/30 transition-all whitespace-nowrap" data-filter="Mythical">Mythical</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border border-[#2dd4bf]/30 transition-all whitespace-nowrap" data-filter="Fishy">Fishy</button>
+      <button class="filter-chip px-5 py-2 rounded-full text-sm font-headline font-bold border border-[#facc15]/30 transition-all whitespace-nowrap" data-filter="Limited">Limited</button>
+    </div>
+    <div class="flex justify-between items-center text-sm text-on-surface-variant">
+      <span id="result-count">78 fish</span>
+    </div>
+  </section>
+
+  <!-- Fish Grid -->
+  <div id="fish-grid" class="px-6 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+</div>
+
+<!-- ==================== FISHING PRACTICE TAB ==================== -->
+<div id="fishing-tab" class="tab-content hidden pt-20">
+  <section class="relative px-6 max-w-2xl mx-auto flex flex-col items-center">
+    <!-- Header -->
+    <div class="text-center mb-8 space-y-2">
+      <h2 class="text-3xl md:text-4xl font-headline font-extrabold tracking-tighter">Casting Range</h2>
+      <p class="text-on-surface-variant">Practice the fishing skill check — click when the marker hits the blue zone!</p>
     </div>
 
-    <div class="tab-bar">
-        <button class="tab-btn active" data-tab="fish-tab">Fish Guide</button>
-        <button class="tab-btn" data-tab="fishing-tab">Fishing Practice</button>
+    <!-- Difficulty -->
+    <div class="flex gap-2 flex-wrap justify-center mb-6">
+      <button class="diff-btn active px-5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-widest transition-all" data-diff="easy">Easy</button>
+      <button class="diff-btn px-5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-widest transition-all" data-diff="medium">Medium</button>
+      <button class="diff-btn px-5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-widest transition-all" data-diff="hard">Hard</button>
+      <button class="diff-btn px-5 py-2 rounded-full text-xs font-headline font-bold uppercase tracking-widest transition-all" data-diff="insane">Insane</button>
     </div>
 
-    <div id="fish-tab" class="tab-content active">
-    <div class="controls">
-        <input type="text" class="search-box" id="search" placeholder="Search for a fish..." autocomplete="off">
-        <div class="filter-group" id="filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="motherfish">Motherfish</button>
-            <button class="filter-btn" data-filter="non-motherfish">Non-Mother</button>
-        </div>
+    <!-- Status -->
+    <div class="fishing-status waiting text-xl font-headline font-bold mb-4 min-h-[32px]" id="fish-status">Click the circle to start!</div>
+
+    <!-- Canvas -->
+    <div class="relative w-72 h-72 md:w-80 md:h-80 cursor-pointer mb-8">
+      <canvas id="fishing-canvas" width="560" height="560" class="w-full h-full"></canvas>
     </div>
 
-    <div class="stats-bar">
-        <span id="result-count">78 fish</span>
+    <!-- Stats -->
+    <div class="w-full bg-surface-container-high p-6 rounded-xl border border-outline-variant/15 mb-8">
+      <div class="grid grid-cols-4 gap-4 text-center">
         <div>
-            <label style="margin-right:4px;">Sort:</label>
-            <select class="sort-select" id="sort">
-                <option value="value-desc">Value: High → Low</option>
-                <option value="value-asc">Value: Low → High</option>
-                <option value="name-asc">Name: A → Z</option>
-                <option value="name-desc">Name: Z → A</option>
-                <option value="rarity">Rarity</option>
-            </select>
+          <div class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">Round</div>
+          <div class="text-2xl font-headline font-extrabold text-on-surface" id="f-round">0</div>
         </div>
-    </div>
-
-    <div class="fish-grid" id="fish-grid"></div>
-    </div>
-
-    <div id="fishing-tab" class="tab-content">
-        <div class="fishing-section">
-            <h2>Fishing Practice</h2>
-            <p class="subtitle">Practice the fishing skill check — click when the marker is inside the blue zone!</p>
-
-            <div class="difficulty-btns">
-                <button class="diff-btn active" data-diff="easy">Easy (Common)</button>
-                <button class="diff-btn" data-diff="medium">Medium (Rare)</button>
-                <button class="diff-btn" data-diff="hard">Hard (Epic)</button>
-                <button class="diff-btn" data-diff="insane">Insane (Mythical)</button>
-            </div>
-
-            <div class="fishing-game-wrapper">
-                <div class="fishing-status waiting" id="fish-status">Click the circle to start!</div>
-                <div class="circle-container" id="fishing-circle">
-                    <canvas id="fishing-canvas" width="560" height="560"></canvas>
-                </div>
-                <div class="fishing-info">
-                    <div class="fishing-stat"><div class="label">Round</div><div class="val" id="f-round">0</div></div>
-                    <div class="fishing-stat"><div class="label">Hits</div><div class="val" id="f-hits" style="color:#4ade80">0</div></div>
-                    <div class="fishing-stat"><div class="label">Misses</div><div class="val" id="f-misses" style="color:#f87171">0</div></div>
-                    <div class="fishing-stat"><div class="label">Best Streak</div><div class="val" id="f-streak">0</div></div>
-                </div>
-            </div>
-
-            <div class="fishing-tips">
-                <h3>Tips</h3>
-                <ul>
-                    <li>Click when the rotating marker is inside the blue zone</li>
-                    <li>Each successful hit makes the zone smaller and faster</li>
-                    <li>Aim for the middle of the blue zone, not the edges</li>
-                    <li>Better fishing rods may give you a larger blue zone in-game</li>
-                    <li>Rarer fish have smaller and faster zones</li>
-                </ul>
-            </div>
+        <div>
+          <div class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">Hits</div>
+          <div class="text-2xl font-headline font-extrabold text-green-400" id="f-hits">0</div>
         </div>
+        <div>
+          <div class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">Misses</div>
+          <div class="text-2xl font-headline font-extrabold text-red-400" id="f-misses">0</div>
+        </div>
+        <div>
+          <div class="text-[9px] font-headline font-bold text-on-surface-variant uppercase tracking-widest">Best Streak</div>
+          <div class="text-2xl font-headline font-extrabold text-primary" id="f-streak">0</div>
+        </div>
+      </div>
     </div>
 
-    <script>
+    <!-- Tips -->
+    <div class="w-full bg-surface-container-high p-6 rounded-xl border border-outline-variant/15">
+      <h3 class="font-headline font-bold text-primary mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">lightbulb</span> Tips
+      </h3>
+      <ul class="space-y-2 text-sm text-on-surface-variant">
+        <li class="flex items-start gap-2"><span class="text-primary mt-0.5">></span> Click when the rotating marker is inside the blue zone</li>
+        <li class="flex items-start gap-2"><span class="text-primary mt-0.5">></span> After each click the marker reverses direction</li>
+        <li class="flex items-start gap-2"><span class="text-primary mt-0.5">></span> Aim for the middle of the blue zone, not the edges</li>
+        <li class="flex items-start gap-2"><span class="text-primary mt-0.5">></span> Better fishing rods may give you a larger zone in-game</li>
+        <li class="flex items-start gap-2"><span class="text-primary mt-0.5">></span> Rarer fish have smaller and faster zones</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+// ==================== FISH DATA ====================
 const fishData = [
     { name:"Sardine", rarity:"Common", source:"Fishy Shop", baseValue:18, priceKg:70, maxKg:54.1, mother:false },
     { name:"Anchovy", rarity:"Common", source:"Fishy Shop", baseValue:13, priceKg:58, maxKg:173.1, mother:false },
@@ -599,6 +327,7 @@ const fishData = [
     { name:"Wafflish", rarity:"Limited", source:"Admin Event", baseValue:38800, priceKg:0, maxKg:112600, mother:false },
 ];
 
+// ==================== FISH GUIDE LOGIC ====================
 const rarityOrder = { Common:0, Uncommon:1, Rare:2, Epic:3, Legendary:4, Mythical:5, Fishy:6, Limited:7 };
 
 function formatValue(v) {
@@ -606,7 +335,6 @@ function formatValue(v) {
     if (v >= 1000) return (v/1000).toFixed(v%1000===0?0:1) + 'k';
     return v.toLocaleString();
 }
-
 function formatKg(v) {
     if (v >= 1000000) return (v/1000000).toFixed(1) + 'm';
     if (v >= 1000) return (v/1000).toFixed(v%1000===0?0:1) + 'k';
@@ -622,9 +350,9 @@ function getFiltered() {
         if (query && !f.name.toLowerCase().includes(query) && !f.rarity.toLowerCase().includes(query) && !f.source.toLowerCase().includes(query)) return false;
         if (currentFilter === 'motherfish' && !f.mother) return false;
         if (currentFilter === 'non-motherfish' && f.mother) return false;
+        if (['Common','Uncommon','Rare','Epic','Legendary','Mythical','Fishy','Limited'].includes(currentFilter) && f.rarity !== currentFilter) return false;
         return true;
     });
-
     list.sort((a, b) => {
         switch(currentSort) {
             case 'value-desc': return b.baseValue - a.baseValue;
@@ -643,95 +371,119 @@ function render() {
     document.getElementById('result-count').textContent = list.length + ' fish';
 
     if (list.length === 0) {
-        grid.innerHTML = '<div class="no-results"><h3>No fish found</h3><p>Try a different search or filter</p></div>';
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-on-surface-variant"><p class="text-xl font-headline font-bold mb-2">No fish found</p><p class="text-sm">Try a different search or filter</p></div>';
         return;
     }
 
     grid.innerHTML = list.map((f, i) => `
-        <div class="fish-card" onclick="this.classList.toggle('expanded')">
-            <div class="fish-main">
-                <span class="fish-rank">#${i+1}</span>
-                <span class="fish-name">${f.name}</span>
-                <div class="fish-badges">
-                    <span class="badge rarity-${f.rarity}">${f.rarity}</span>
-                    ${f.mother ? '<span class="badge badge-motherfish">Mother</span>' : ''}
+        <div class="group bg-surface-container-high rounded-xl overflow-hidden border-l-2 rarity-border-${f.rarity} card-glow-${f.rarity} hover:scale-[1.02] transition-all duration-300 cursor-pointer" onclick="this.querySelector('.card-details').classList.toggle('hidden')">
+            <div class="p-5 space-y-3">
+                <div class="flex justify-between items-start">
+                    <span class="rbadge-${f.rarity} px-3 py-1 rounded text-[10px] font-headline font-black uppercase tracking-widest">${f.rarity}</span>
+                    ${f.mother ? '<div class="bg-green-500/20 text-green-400 p-1.5 rounded-full" title="Motherfish"><span class="material-symbols-outlined text-base" style="font-variation-settings:\'FILL\' 1">egg</span></div>' : ''}
                 </div>
-            </div>
-            <div class="fish-value">
-                <span class="amount">${formatValue(f.baseValue)}</span>
-            </div>
-            <div class="fish-source">Source: ${f.source}</div>
-            <div class="fish-details">
-                <div class="detail-item">
-                    <span class="detail-label">Base Value</span>
-                    <span class="detail-value">${f.baseValue.toLocaleString()}</span>
+                <div>
+                    <h3 class="text-lg font-headline font-bold text-white">${f.name}</h3>
+                    <p class="text-on-surface-variant text-xs font-medium mt-1">${f.source}</p>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Price / Kg</span>
-                    <span class="detail-value">${f.priceKg > 0 ? f.priceKg.toLocaleString() : '-'}</span>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-surface-container rounded-lg p-2.5">
+                        <span class="text-outline text-[9px] font-headline font-bold uppercase block">Base Value</span>
+                        <span class="rval-${f.rarity} font-bold text-sm">${formatValue(f.baseValue)}</span>
+                    </div>
+                    <div class="bg-surface-container rounded-lg p-2.5">
+                        <span class="text-outline text-[9px] font-headline font-bold uppercase block">Max Value</span>
+                        <span class="text-on-surface font-bold text-sm">${f.priceKg > 0 ? formatValue(f.baseValue + Math.floor(f.priceKg * f.maxKg)) : '-'}</span>
+                    </div>
                 </div>
-                <div class="detail-item">
-                    <span class="detail-label">Max Kg</span>
-                    <span class="detail-value">${formatKg(f.maxKg)}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Max Total Value</span>
-                    <span class="detail-value" style="color:#fbbf24;font-weight:600">${f.priceKg > 0 ? formatValue(f.baseValue + Math.floor(f.priceKg * f.maxKg)) : '-'}</span>
-                </div>
-                <div class="detail-item" style="grid-column:1/-1">
-                    <span class="detail-label">Source</span>
-                    <span class="detail-value">${f.source}</span>
+                <!-- Expandable details -->
+                <div class="card-details hidden border-t border-outline-variant/20 pt-3 mt-1 grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-surface-container rounded-lg p-2.5">
+                        <span class="text-outline text-[9px] font-headline font-bold uppercase block">Price/Kg</span>
+                        <span class="text-on-surface font-bold">${f.priceKg > 0 ? f.priceKg.toLocaleString() : '-'}</span>
+                    </div>
+                    <div class="bg-surface-container rounded-lg p-2.5">
+                        <span class="text-outline text-[9px] font-headline font-bold uppercase block">Max Kg</span>
+                        <span class="text-on-surface font-bold">${formatKg(f.maxKg)}</span>
+                    </div>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
+// ==================== EVENT LISTENERS ====================
 document.getElementById('search').addEventListener('input', render);
 document.getElementById('sort').addEventListener('change', e => { currentSort = e.target.value; render(); });
-document.querySelectorAll('.filter-btn').forEach(btn => {
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        document.querySelectorAll('.filter-chip').forEach(b => {
+            b.classList.remove('active','bg-primary/20','text-primary','border-primary/50');
+            b.classList.add('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30');
+        });
+        btn.classList.add('active','bg-primary/20','text-primary','border-primary/50');
+        btn.classList.remove('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30');
         currentFilter = btn.dataset.filter;
         render();
     });
 });
 
-render();
+// Init filter chip styles
+document.querySelectorAll('.filter-chip').forEach(btn => {
+    if (btn.classList.contains('active')) {
+        btn.classList.add('bg-primary/20','text-primary','border-primary/50');
+    } else {
+        btn.classList.add('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30');
+    }
+});
 
 // Tab switching
-document.querySelectorAll('.tab-btn').forEach(btn => {
+document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
+        document.querySelectorAll('.nav-tab').forEach(b => {
+            b.classList.remove('active','bg-primary/20','text-primary');
+            b.classList.add('text-on-surface-variant');
+        });
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        btn.classList.add('active','bg-primary/20','text-primary');
+        btn.classList.remove('text-on-surface-variant');
+        document.getElementById(btn.dataset.tab).classList.remove('hidden');
     });
 });
 
-// Fishing Practice Game
+// Init tab styles
+document.querySelectorAll('.nav-tab').forEach(btn => {
+    if (btn.classList.contains('active')) {
+        btn.classList.add('bg-primary/20','text-primary');
+    } else {
+        btn.classList.add('text-on-surface-variant');
+    }
+});
+
+render();
+
+// ==================== FISHING PRACTICE GAME ====================
 (() => {
     const canvas = document.getElementById('fishing-canvas');
     const ctx = canvas.getContext('2d');
     const W = 560, H = 560, cx = W/2, cy = H/2, radius = 220;
 
     const difficulties = {
-        easy:   { zoneSize: 1.8,  speed: 1.0, shrink: 0.05, speedUp: 0.08 },
-        medium: { zoneSize: 1.3,  speed: 1.5, shrink: 0.06, speedUp: 0.12 },
-        hard:   { zoneSize: 0.85, speed: 2.2, shrink: 0.05, speedUp: 0.15 },
-        insane: { zoneSize: 0.5,  speed: 3.2, shrink: 0.04, speedUp: 0.2 },
+        easy:   { zoneSize: 1.8,  speed: 1.0 },
+        medium: { zoneSize: 1.3,  speed: 1.5 },
+        hard:   { zoneSize: 0.85, speed: 2.2 },
+        insane: { zoneSize: 0.5,  speed: 3.2 },
     };
 
     let diff = 'easy';
-    let angle = 0;
-    let zoneStart = 0;
+    let angle = 0, zoneStart = 0;
     let zoneSize = difficulties[diff].zoneSize;
     let speed = difficulties[diff].speed;
     let running = false;
     let hits = 0, misses = 0, round = 0, streak = 0, bestStreak = 0;
-    let flashTimer = 0;
-    let flashType = '';
+    let flashTimer = 0, flashType = '';
 
     function resetGame() {
         angle = 0;
@@ -743,14 +495,12 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         setStatus('Click the circle to start!', 'waiting');
     }
 
-    function randomizeZone() {
-        zoneStart = Math.random() * Math.PI * 2;
-    }
+    function randomizeZone() { zoneStart = Math.random() * Math.PI * 2; }
 
     function setStatus(text, type) {
         const el = document.getElementById('fish-status');
         el.textContent = text;
-        el.className = 'fishing-status ' + type;
+        el.className = 'fishing-status text-xl font-headline font-bold mb-4 min-h-[32px] ' + type;
     }
 
     function updateStats() {
@@ -760,146 +510,86 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.getElementById('f-streak').textContent = bestStreak;
     }
 
-    function normAngle(a) {
-        a = a % (Math.PI * 2);
-        return a < 0 ? a + Math.PI * 2 : a;
-    }
+    function normAngle(a) { a = a % (Math.PI * 2); return a < 0 ? a + Math.PI * 2 : a; }
 
     function isInZone() {
         let a = normAngle(angle);
-        let s = normAngle(zoneStart);
-        let e = normAngle(zoneStart + zoneSize);
-        // Calculate shortest angular distance from marker to zone center
         let center = normAngle(zoneStart + zoneSize / 2);
-        let diff = Math.abs(a - center);
-        if (diff > Math.PI) diff = Math.PI * 2 - diff;
-        return diff <= zoneSize / 2;
+        let d = Math.abs(a - center);
+        if (d > Math.PI) d = Math.PI * 2 - d;
+        return d <= zoneSize / 2;
     }
 
     function draw() {
         ctx.clearRect(0, 0, W, H);
 
-        // Outer ring bg
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.lineWidth = 36;
-        ctx.strokeStyle = '#1e293b';
-        ctx.stroke();
+        // Ring bg
+        ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.lineWidth = 36; ctx.strokeStyle = '#1b1f2c'; ctx.stroke();
 
-        // Gold border rings
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius + 18, 0, Math.PI * 2);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#b8960c';
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius - 18, 0, Math.PI * 2);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#b8960c';
-        ctx.stroke();
+        // Border rings
+        ctx.beginPath(); ctx.arc(cx, cy, radius + 18, 0, Math.PI * 2);
+        ctx.lineWidth = 2; ctx.strokeStyle = '#3e484f'; ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, radius - 18, 0, Math.PI * 2);
+        ctx.lineWidth = 2; ctx.strokeStyle = '#3e484f'; ctx.stroke();
 
         // Blue zone
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, zoneStart, zoneStart + zoneSize);
+        ctx.beginPath(); ctx.arc(cx, cy, radius, zoneStart, zoneStart + zoneSize);
         ctx.lineWidth = 36;
-        ctx.strokeStyle = flashTimer > 0 && flashType === 'hit' ? '#4ade80' : flashTimer > 0 && flashType === 'miss' ? '#f87171' : '#2196f3';
+        ctx.strokeStyle = flashTimer > 0 && flashType === 'hit' ? '#4ade80' : flashTimer > 0 && flashType === 'miss' ? '#f87171' : '#4fc3f7';
         ctx.stroke();
 
-        // Zone edge markers
+        // Zone edges
         for (let a of [zoneStart, zoneStart + zoneSize]) {
-            const ix = cx + Math.cos(a) * (radius - 20);
-            const iy = cy + Math.sin(a) * (radius - 20);
-            const ox = cx + Math.cos(a) * (radius + 20);
-            const oy = cy + Math.sin(a) * (radius + 20);
             ctx.beginPath();
-            ctx.moveTo(ix, iy);
-            ctx.lineTo(ox, oy);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#4fc3f7';
-            ctx.stroke();
+            ctx.moveTo(cx + Math.cos(a) * (radius - 20), cy + Math.sin(a) * (radius - 20));
+            ctx.lineTo(cx + Math.cos(a) * (radius + 20), cy + Math.sin(a) * (radius + 20));
+            ctx.lineWidth = 2; ctx.strokeStyle = '#9adbff'; ctx.stroke();
         }
 
-        // Rotating marker
+        // Marker
         if (running) {
             const mx = cx + Math.cos(angle) * radius;
             const my = cy + Math.sin(angle) * radius;
-
-            // Marker glow
-            ctx.beginPath();
-            ctx.arc(mx, my, 16, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.fill();
-
-            // Marker dot
-            ctx.beginPath();
-            ctx.arc(mx, my, 10, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#b8960c';
-            ctx.stroke();
+            ctx.beginPath(); ctx.arc(mx, my, 16, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(154,219,255,0.2)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(mx, my, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff'; ctx.fill();
+            ctx.lineWidth = 2; ctx.strokeStyle = '#9adbff'; ctx.stroke();
         }
 
-        // Center circle
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius - 40, 0, Math.PI * 2);
-        ctx.fillStyle = '#0d1320';
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#1e3a5f';
-        ctx.stroke();
+        // Center
+        ctx.beginPath(); ctx.arc(cx, cy, radius - 40, 0, Math.PI * 2);
+        ctx.fillStyle = '#0a0e1a'; ctx.fill();
+        ctx.lineWidth = 1; ctx.strokeStyle = '#313442'; ctx.stroke();
 
-        // Center text
-        ctx.fillStyle = '#7a8ba8';
-        ctx.font = '600 18px Segoe UI';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         if (!running) {
-            ctx.fillText('CLICK TO', cx, cy - 14);
-            ctx.fillText('START', cx, cy + 14);
+            ctx.fillStyle = '#889299'; ctx.font = '600 18px Plus Jakarta Sans, sans-serif';
+            ctx.fillText('CLICK TO', cx, cy - 14); ctx.fillText('START', cx, cy + 14);
         } else {
-            ctx.fillStyle = '#4fc3f7';
-            ctx.font = '700 28px Segoe UI';
+            ctx.fillStyle = '#9adbff'; ctx.font = '700 28px Plus Jakarta Sans, sans-serif';
             ctx.fillText('CLICK!', cx, cy);
         }
-
         if (flashTimer > 0) flashTimer--;
     }
 
-    function loop() {
-        if (running) {
-            angle += speed * 0.016;
-        }
-        draw();
-        requestAnimationFrame(loop);
-    }
+    function loop() { if (running) angle += speed * 0.016; draw(); requestAnimationFrame(loop); }
 
     canvas.addEventListener('click', () => {
-        if (!running) {
-            running = true;
-            angle = zoneStart - 0.5;
-            setStatus('Click when the marker is in the blue zone!', 'waiting');
-            return;
-        }
-
+        if (!running) { running = true; angle = zoneStart - 0.5; setStatus('Click when the marker is in the blue zone!', 'waiting'); return; }
         round++;
         if (isInZone()) {
-            hits++;
-            streak++;
+            hits++; streak++;
             if (streak > bestStreak) bestStreak = streak;
-            flashType = 'hit';
-            flashTimer = 15;
+            flashType = 'hit'; flashTimer = 15;
             setStatus('HIT! Nice catch!', 'hit');
-            // Reverse direction, keep same speed and zone size
             speed = Math.abs(speed) * (speed > 0 ? -1 : 1);
             randomizeZone();
         } else {
-            misses++;
-            streak = 0;
-            flashType = 'miss';
-            flashTimer = 15;
+            misses++; streak = 0;
+            flashType = 'miss'; flashTimer = 15;
             setStatus('MISS! The fish got away...', 'miss');
-            // Reset difficulty, keep direction flipped
             let dir = speed > 0 ? -1 : 1;
             zoneSize = difficulties[diff].zoneSize;
             speed = difficulties[diff].speed * dir;
@@ -910,17 +600,30 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
     document.querySelectorAll('.diff-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.diff-btn').forEach(b => {
+                b.classList.remove('active','bg-primary/20','text-primary','border-primary/50');
+                b.classList.add('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30');
+            });
+            btn.classList.add('active','bg-primary/20','text-primary','border-primary/50');
+            btn.classList.remove('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30');
             diff = btn.dataset.diff;
             running = false;
             resetGame();
         });
     });
 
+    // Init diff button styles
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+        if (btn.classList.contains('active')) {
+            btn.classList.add('bg-primary/20','text-primary','border-primary/50','border');
+        } else {
+            btn.classList.add('bg-surface-container-highest','text-on-surface-variant','border-outline-variant/30','border');
+        }
+    });
+
     resetGame();
     loop();
 })();
-    </script>
+</script>
 </body>
 </html>
