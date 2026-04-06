@@ -890,9 +890,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
             flashType = 'hit';
             flashTimer = 15;
             setStatus('HIT! Nice catch!', 'hit');
-            // Make it harder
-            zoneSize = Math.max(0.15, zoneSize - difficulties[diff].shrink);
-            speed = (Math.abs(speed) + difficulties[diff].speedUp) * (speed > 0 ? -1 : 1);
+            // Reverse direction, keep same speed and zone size
+            speed = Math.abs(speed) * (speed > 0 ? -1 : 1);
             randomizeZone();
         } else {
             misses++;
